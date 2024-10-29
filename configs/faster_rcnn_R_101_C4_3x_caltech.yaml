@@ -21,3 +21,4 @@ DATALOADER:
 DATASETS:
   TRAIN: ("caltech_pedestrians_train",)
   TEST: ("caltech_pedestrians_test",)
+OUTPUT_DIR: 

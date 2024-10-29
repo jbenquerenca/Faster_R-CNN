@@ -1,5 +1,4 @@
-import json
-import os
+import json, os
 from fvcore.common.file_io import PathManager
 from collections import defaultdict
 from detectron2.data import MetadataCatalog, DatasetCatalog
@@ -33,6 +32,7 @@ def register():
     SPLITS = [
         ("tju-pedestrian-traffic_train", "TJU-Pedestrian-Traffic", "train"),
         ("tju-pedestrian-traffic_val", "TJU-Pedestrian-Traffic", "val"),
+        ("tju-pedestrian-traffic_test", "TJU-Pedestrian-Traffic", "test"),
         ("caltech_pedestrians_train", "Caltech_Pedestrians", "train"),
         ("caltech_pedestrians_val", "Caltech_Pedestrians", "val"),
         ("caltech_pedestrians_test", "Caltech_Pedestrians", "test"),
