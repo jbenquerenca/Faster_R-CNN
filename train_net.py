@@ -36,8 +36,9 @@ from detectron2.evaluation import (
     verify_results,
 )
 from detectron2.modeling import GeneralizedRCNNWithTTA
-from dataset import register
 
+# register pedestrian dataset
+from pedestrian import register
 register()
 
 def build_evaluator(cfg, dataset_name, output_folder=None):

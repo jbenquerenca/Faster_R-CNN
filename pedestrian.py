@@ -26,7 +26,6 @@ def load_instances(dirname: str, split: str):
 def register_dataset(name, dirname, split):
     DatasetCatalog.register(name, lambda: load_instances(dirname, split))
     MetadataCatalog.get(name).set(thing_classes=["_background", "pedestrian"], dirname=dirname, split=split)
-# ==== Predefined splits for cross domain object detection datasets =====
 def register():
     root = os.getenv("DETECTRON2_DATASETS", "datasets")
     SPLITS = [
@@ -35,8 +34,7 @@ def register():
         ("tju-pedestrian-traffic_test", "TJU-Pedestrian-Traffic", "test"),
         ("caltech_pedestrians_train", "Caltech_Pedestrians", "train"),
         ("caltech_pedestrians_val", "Caltech_Pedestrians", "val"),
-        ("caltech_pedestrians_test", "Caltech_Pedestrians", "test"),
-    ]
+        ("caltech_pedestrians_test", "Caltech_Pedestrians", "test")]
     for name, dirname, split in SPLITS:
         register_dataset(name, os.path.join(root, dirname), split)
         MetadataCatalog.get(name).evaluator_type = "coco"
