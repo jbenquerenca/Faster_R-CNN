@@ -25,8 +25,6 @@ def register_all_pedestrian_datasets(root):
         ("caltech_pedestrians_train",    "Caltech_Pedestrians",    "train"),
         ("caltech_pedestrians_val",      "Caltech_Pedestrians",    "val"),
         ("caltech_pedestrians_test",     "Caltech_Pedestrians",    "test"),
-        ("eurocity_train",               "EuroCity",               "train"),
-        ("eurocity_val",                 "EuroCity",               "val"),
         ("tju-pedestrian-traffic_train", "TJU-Pedestrian-Traffic", "train"),
         ("tju-pedestrian-traffic_val",   "TJU-Pedestrian-Traffic", "val"),
         ("tju-pedestrian-traffic_test",  "TJU-Pedestrian-Traffic", "test"),
