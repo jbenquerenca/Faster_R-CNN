@@ -1,40 +1,38 @@
 import json, os
-from fvcore.common.file_io import PathManager
 from collections import defaultdict
+from detectron2.structures import BoxMode
 from detectron2.data import MetadataCatalog, DatasetCatalog
-from detectron2.structures import Boxes, BoxMode
-def load_instances(dirname: str, split: str):
-    with PathManager.open(os.path.join(dirname, "Annotations", split + ".json")) as f: annot_data = json.load(f)
-    annots_dict = defaultdict(list)
-    imgs_dict = {img["id"]:img for img in annot_data["images"]}
-    for anno in annot_data["annotations"]: annots_dict[anno["image_id"]].append(anno)
-    dicts = list()
-    for img_id, annos in annots_dict.items():
-        if not "Caltech" in dirname: img_info = imgs_dict[str(img_id)] if split=="train" else imgs_dict[img_id]
-        else: img_info = imgs_dict[img_id]
-        r = dict(file_name=os.path.join(dirname, "Images", img_info["file_name"]), image_id=img_id, height=img_info["height"], width=img_info["width"])
-        instances = list()
-        for anno in annos:
-            bbox = BoxMode.convert([round(float(x), 3) for x in anno["bbox"]], BoxMode.XYWH_ABS, BoxMode.XYXY_ABS)
-            instance = dict(bbox=bbox, area=Boxes([bbox]).area()[0].item(),
-                iscrowd=anno["iscrowd"], ignore=anno["iscrowd"] if "ignore" not in anno else anno["ignore"],
-                category_id=anno["category_id"], bbox_mode=BoxMode.XYXY_ABS)
-            instances.append(instance)
-        r["annotations"] = instances
+def read_image_info_and_annotations(annotation_path):
+    annotations_json, annotations = json.load(open(annotation_path)), defaultdict(dict)
+    for img in annotations_json["images"]: annotations[img["id"]]["img_info"], annotations[img["id"]]["instances"] = img, list()
+    for anno in annotations_json["annotations"]: annotations[anno["image_id"]]["instances"].append(anno)
+    return annotations
+def load_pedestrian_instances(dirname: str, split: str):
+    annotations, dicts = read_image_info_and_annotations(os.path.join(dirname, "annotations", f"{split}.json")), list()
+    for img_dict in annotations.values():
+        r = dict(file_name=os.path.join(dirname, "images", img_dict["img_info"]["file_name"]), image_id=img_dict["img_info"]["id"],
+                 height=img_dict["img_info"]["height"], width=img_dict["img_info"]["width"], annotations=list())
+        for instance in img_dict["instances"]:
+            if ("ignore" in instance and not instance["ignore"]) or (not instance["iscrowd"]):
+                r["annotations"].append(dict("category_id": 1, "bbox": instance["bbox"], "bbox_mode": BoxMode.XYWH_ABS))
         dicts.append(r)
     return dicts
-def register_dataset(name, dirname, split):
-    DatasetCatalog.register(name, lambda: load_instances(dirname, split))
+def register_pedestrian_dataset(name, dirname, split):
+    DatasetCatalog.register(name, lambda: load_pedestrian_instances(dirname, split))
     MetadataCatalog.get(name).set(thing_classes=["_background", "pedestrian"], dirname=dirname, split=split)
-def register():
-    root = os.getenv("DETECTRON2_DATASETS", "datasets")
+def register_all_pedestrian_datasets(root):
     SPLITS = [
+        ("caltech_pedestrians_train",    "Caltech_Pedestrians",    "train"),
+        ("caltech_pedestrians_val",      "Caltech_Pedestrians",    "val"),
+        ("caltech_pedestrians_test",     "Caltech_Pedestrians",    "test"),
+        ("eurocity_train",               "EuroCity",               "train"),
+        ("eurocity_val",                 "EuroCity",               "val"),
         ("tju-pedestrian-traffic_train", "TJU-Pedestrian-Traffic", "train"),
-        ("tju-pedestrian-traffic_val", "TJU-Pedestrian-Traffic", "val"),
-        ("tju-pedestrian-traffic_test", "TJU-Pedestrian-Traffic", "test"),
-        ("caltech_pedestrians_train", "Caltech_Pedestrians", "train"),
-        ("caltech_pedestrians_val", "Caltech_Pedestrians", "val"),
-        ("caltech_pedestrians_test", "Caltech_Pedestrians", "test")]
+        ("tju-pedestrian-traffic_val",   "TJU-Pedestrian-Traffic", "val"),
+        ("tju-pedestrian-traffic_test",  "TJU-Pedestrian-Traffic", "test"),
+    ]
     for name, dirname, split in SPLITS:
-        register_dataset(name, os.path.join(root, dirname), split)
-        MetadataCatalog.get(name).evaluator_type = "coco"
+        register_pedestrian_dataset(name, os.path.join(root, dirname), split),
+        MetadataCatalog.get(name).evaluator_type = "pedestrian"
+_root = os.getenv("DETECTRON2_DATASETS", "datasets")
+register_all_pedestrian_datasets(_root)
