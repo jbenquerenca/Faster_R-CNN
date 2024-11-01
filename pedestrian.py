@@ -32,5 +32,3 @@ def register_all_pedestrian_datasets(root):
     for name, dirname, split in SPLITS:
         register_pedestrian_dataset(name, os.path.join(root, dirname), split),
         MetadataCatalog.get(name).evaluator_type = "pedestrian"
-_root = os.getenv("DETECTRON2_DATASETS", "datasets")
-register_all_pedestrian_datasets(_root)
