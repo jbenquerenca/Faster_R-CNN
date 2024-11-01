@@ -14,7 +14,7 @@ def load_pedestrian_instances(dirname: str, split: str):
                  height=img_dict["img_info"]["height"], width=img_dict["img_info"]["width"], annotations=list())
         for instance in img_dict["instances"]:
             if ("ignore" in instance and not instance["ignore"]) or (not instance["iscrowd"]):
-                r["annotations"].append(dict("category_id": 1, "bbox": instance["bbox"], "bbox_mode": BoxMode.XYWH_ABS))
+                r["annotations"].append({"category_id": 1, "bbox": instance["bbox"], "bbox_mode": BoxMode.XYWH_ABS})
         dicts.append(r)
     return dicts
 def register_pedestrian_dataset(name, dirname, split):

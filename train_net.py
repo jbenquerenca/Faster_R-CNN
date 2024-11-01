@@ -39,8 +39,8 @@ from detectron2.modeling import GeneralizedRCNNWithTTA
 
 # register pedestrian dataset
 from pedestrian_evaluation import PedestrianDetectionEvaluator
-from pedestrian import register
-register()
+from pedestrian import register_all_pedestrian_datasets
+register_all_pedestrian_datasets(os.getenv("DETECTRON2_DATASETS", "datasets"))
 
 def build_evaluator(cfg, dataset_name, output_folder=None):
     """
@@ -53,34 +53,10 @@ def build_evaluator(cfg, dataset_name, output_folder=None):
         output_folder = os.path.join(cfg.OUTPUT_DIR, "inference")
     evaluator_list = []
     evaluator_type = MetadataCatalog.get(dataset_name).evaluator_type
-    if evaluator_type in ["sem_seg", "coco_panoptic_seg"]:
-        evaluator_list.append(
-            SemSegEvaluator(
-                dataset_name,
-                distributed=True,
-                output_dir=output_folder,
-            )
-        )
-    if evaluator_type in ["coco", "coco_panoptic_seg"]:
-        evaluator_list.append(COCOEvaluator(dataset_name, output_dir=output_folder))
-    if evaluator_type == "coco_panoptic_seg":
-        evaluator_list.append(COCOPanopticEvaluator(dataset_name, output_folder))
-    if evaluator_type == "cityscapes_instance":
-        return CityscapesInstanceEvaluator(dataset_name)
-    if evaluator_type == "cityscapes_sem_seg":
-        return CityscapesSemSegEvaluator(dataset_name)
-    elif evaluator_type == "pascal_voc":
-        return PascalVOCDetectionEvaluator(dataset_name)
-    elif evaluator_type == "lvis":
-        return LVISEvaluator(dataset_name, output_dir=output_folder)
-    if len(evaluator_list) == 0:
-        raise NotImplementedError(
-            "no Evaluator for the dataset {} with the type {}".format(dataset_name, evaluator_type)
-        )
-    elif len(evaluator_list) == 1:
-        return evaluator_list[0]
+    evaluator_list.append(PedestrianDetectionEvaluator(dataset_name, False, output_dir=output_folder))
+    if len(evaluator_list) == 0: raise NotImplementedError("no Evaluator for the dataset {} with the type {}".format(dataset_name, evaluator_type))
+    elif len(evaluator_list) == 1: return evaluator_list[0]
     return DatasetEvaluators(evaluator_list)
-
 
 class Trainer(DefaultTrainer):
     """
