@@ -4,7 +4,7 @@ from detectron2.data import MetadataCatalog
 from detectron2.utils import comm
 from detectron2.structures import BoxMode
 from detectron2.evaluation.evaluator import DatasetEvaluator
-from .eval.eval_demo import validate
+from eval.eval_demo import validate
 
 class PedestrianDetectionEvaluator(DatasetEvaluator):
     def __init__(self, dataset_name, distributed, output_dir=None):
