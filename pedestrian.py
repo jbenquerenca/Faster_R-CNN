@@ -2,6 +2,9 @@ import json, os
 from collections import defaultdict
 from detectron2.structures import BoxMode
 from detectron2.data import MetadataCatalog, DatasetCatalog
+# some images in tju throw an exception loading in PIL
+from PIL import ImageFile
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 def read_image_info_and_annotations(annotation_path):
     annotations_json, annotations = json.load(open(annotation_path)), defaultdict(dict)
     for img in annotations_json["images"]: annotations[img["id"]]["img_info"], annotations[img["id"]]["instances"] = img, list()
