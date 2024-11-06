@@ -1,7 +1,8 @@
 Faster R-CNN for pedestrian Detection. Supports the datasets Caltech Pedestrians and TJU Pedestrian Traffic.
 
 
-# Install
+# Dependencies
+Detectron2:
 ```
 python -m pip install 'git+https://github.com/facebookresearch/detectron2.git'
 ```
