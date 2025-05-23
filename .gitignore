@@ -1,12 +1,5 @@
 **/__pycache__/
 
-<<<<<<< HEAD
-/output
-/pretrained
-/datasets
-=======
 /pretrained
 /datasets
 /output/*
-*.pth
->>>>>>> update
