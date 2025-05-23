@@ -7,7 +7,6 @@ MODEL:
   ROI_HEADS:
     NAME: "Res5ROIHeads"
     NUM_CLASSES: 2
-  # DEVICE: cpu
 SOLVER:
   STEPS: (60277, 71759)
   MAX_ITER: 77500
@@ -20,5 +19,5 @@ DATALOADER:
   FILTER_EMPTY_ANNOTATIONS: False
 DATASETS:
   TRAIN: ("caltech_pedestrians_train",)
-  TEST: ("caltech_pedestrians_test",)
+  TEST: ("tju-pedestrian-traffic_test",)
 OUTPUT_DIR: 
