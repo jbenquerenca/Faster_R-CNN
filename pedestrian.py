@@ -4,17 +4,11 @@ import os
 from collections import defaultdict
 from detectron2.structures import BoxMode
 from detectron2.data import MetadataCatalog, DatasetCatalog
-<<<<<<< HEAD
-# some images in tju throw an exception loading in PIL
-from PIL import ImageFile
-ImageFile.LOAD_TRUNCATED_IMAGES = True
-=======
 
 # some images in tju throw an exception loading in PIL
 from PIL import ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
->>>>>>> update
 def read_image_info_and_annotations(annotation_path):
     annotations = defaultdict(dict)
 
@@ -33,17 +27,6 @@ def read_image_info_and_annotations(annotation_path):
     return annotations
 
 def load_pedestrian_instances(dirname: str, split: str):
-<<<<<<< HEAD
-    annotations, dicts = read_image_info_and_annotations(os.path.join(dirname, "annotations", f"{split}.json")), list()
-    for img_dict in annotations.values():
-        r = dict(file_name=os.path.join(dirname, "images", img_dict["img_info"]["file_name"]), image_id=img_dict["img_info"]["id"],
-                 height=img_dict["img_info"]["height"], width=img_dict["img_info"]["width"], annotations=list())
-        for instance in img_dict["instances"]:
-            if ("ignore" in instance and not instance["ignore"]) or (not instance["iscrowd"]):
-                r["annotations"].append({"category_id": 1, "bbox": instance["bbox"], "bbox_mode": BoxMode.XYWH_ABS})
-        dicts.append(r)
-    return dicts
-=======
     return [{
             "file_name": os.path.join(dirname, "images", img_dict["img_info"]["file_name"]),
             "image_id": img_dict["img_info"]["id"],
@@ -54,14 +37,16 @@ def load_pedestrian_instances(dirname: str, split: str):
                     "bbox": isinstance["bbox"],
                     "bbox_mode": BoxMode.XYWH_ABS 
                 } for instance in img_dict["instances"] if ("ignore" in instance and not instance["ignore"]) or (not instance["iscrowd"])]
-            }
-            for img_dict in read_image_info_and_annotations(os.path.join(dirname, "annotations", f"{split}.json"))]
+            } for img_dict in read_image_info_and_annotations(os.path.join(dirname, "annotations", f"{split}.json"))]
 
->>>>>>> update
 def register_pedestrian_dataset(name, dirname, split):
-    DatasetCatalog.register(name, lambda: 
-                            load_pedestrian_instances(dirname, split))
-    MetadataCatalog.get(name).set(thing_classes=["_background", "pedestrian"], dirname=dirname, split=split)
+    DatasetCatalog.register(name, 
+                            lambda: load_pedestrian_instances(dirname, split))
+
+    MetadataCatalog.get(name).set(
+        thing_classes=["_background", "pedestrian"], 
+        dirname=dirname, 
+        split=split)
 
 def register_all_pedestrian_datasets(root):
     SPLITS = [
